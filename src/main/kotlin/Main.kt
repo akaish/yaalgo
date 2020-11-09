@@ -4,6 +4,8 @@ import linkedlists.reverse.ReverseProblem
 import linkedlists.twonumbers.SumProblem
 import java.lang.Integer.min
 import java.lang.Math.pow
+import java.util.*
+import kotlin.collections.LinkedHashMap
 import kotlin.math.max
 
 val problems = LinkedHashMap<String, () -> Problem>().apply {
@@ -22,7 +24,7 @@ fun main(vararg p: String) {
         return
     }
     if(p[0] == "mx") {
-        maxSquareTask()
+        longestLabels()
         return
     }
     val problem = problems[p[0]]
@@ -50,24 +52,44 @@ fun main(vararg p: String) {
 fun maxSquareTask() {
     // task [1,8,6,2,5,4,8,3,7]
     // expected = 49
-    // Wrong need another guess
-//    val task = intArrayOf(1,8,6,2,5,4,8,3,7)
-//
-//    var best = 0
-//
-//    var l = 0
-//    for(r in task.indices) {
-//        val thisSquare = square(task[l], task[r], r-l)
-//        if(thisSquare > best) {
-//            best = thisSquare
-//        } else {
-//            while (square(task[l], task[r], r - l) < best && r != l) {
-//                l++
-//            }
-//        }
-//        println("$l $r")
-//    }
-//    println(best)
+    val task = intArrayOf(1,8,6,2,5,4,8,3,7)
+    var maxSum = 0
+    var l = 0
+    var r = (task.size - 1)
+    while(r != l) {
+        maxSum = max(maxSum, square(task[l], task[r], r-l))
+        if(task[r] > task[l])
+            l++
+        else r--
+    }
+    println(maxSum)
 }
 
 private fun square(lV: Int, rV: Int, lenght: Int) = min(lV, rV) * lenght
+
+fun longestLabels() {
+    //val str = "ababcbacadefegdehijhklij"
+    val str = "1234567675"
+    val strMap = LinkedHashMap<Char, MutableIntPair>()
+    var position = 0
+    str.forEach {
+        if(strMap.containsKey(it)) {
+            strMap[it] = strMap[it]!!.copy(second = position)
+        } else {
+            strMap[it] = MutableIntPair(position, position)
+        }
+        position++
+    }
+    var result = 1
+    var lastEnd = 0
+    strMap.values.forEach {
+        if(it.first > lastEnd) {
+            result++
+        }
+        lastEnd = max(it.second, lastEnd)
+    }
+    println(result)
+}
+
+data class MutableIntPair(var first: Int, var second: Int)
+
